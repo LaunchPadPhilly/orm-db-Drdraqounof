@@ -12,32 +12,31 @@ jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
+    env:
+      DATABASE_URL: 'postgresql://neondb_owner:npg_BGdCPHzh9a5u@ep-shy-night-adys9nce-pooler.c-2.us-east-1.aws.neon.tech/project_portfolios?sslmode=require&channel_binding=require'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          
+          node-version: "20"
+
       - name: Install dependencies
-        run: npm install
-        
-      - name: Run tests
+        run: npm ci
+
+      - name: Prisma Generate
+        run: npx prisma generate
+
+      - name: Run Dev
+        run: npm run dev &
+
+      - name: waiting for server 
+        run: npx wait-on http://localhost:3000
+
+      - name: Run unit test 
         run: npm test
-        
+
       - name: Run build
         run: npm run build
-        
-      - name: Autograding Reporter
-        uses: classroom-resources/autograding-grading-reporter@v1
-        env:
-          INSTALL-DEPENDENCIES_RESULTS: "${{steps.install-dependencies.outputs.result}}"
-          FILE-STRUCTURE-TEST_RESULTS: "${{steps.file-structure-test.outputs.result}}"
-          COMPONENT-TESTS_RESULTS: "${{steps.component-tests.outputs.result}}"
-          CODE-QUALITY-TESTS_RESULTS: "${{steps.code-quality-tests.outputs.result}}"
-          BUILD-TEST_RESULTS: "${{steps.build-test.outputs.result}}"
-          LINT-TEST_RESULTS: "${{steps.lint-test.outputs.result}}"
-        with:
-          runners: install-dependencies,file-structure-test,component-tests,code-quality-tests,build-test,lint-test
