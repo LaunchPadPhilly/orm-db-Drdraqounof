@@ -12,8 +12,7 @@ jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     env:
-       DATABASE_URL: "postgresql://neondb_owner:npg_BGdCPHzh9a5u@ep-shy-night-adys9nce-pooler.c-2.us-east-1.aws.neon.tech/project_portfolios?sslmode=require&channel_binding=require"
-
+       DATABASE_URL: {{ secrets.DATABASE_URL }}
     if: github.actor != 'github-classroom[bot]'
     steps:
       - name: Checkout code
