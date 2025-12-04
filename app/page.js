@@ -76,8 +76,8 @@ export default function Home() {
           float a=0., d=0., i=0.;
           for (; i < 8.; d += sin(i++ * u.y + a))
              a += sin(i - d + 0.15 * t - a * u.x);
-          vec3 c = mix(vec3(0.1,0.0,0.8), vec3(0.5,0.2,1.0), .5+.5*cos(a));
-          c = mix(c, vec3(1.0), .5+.5*sin(d));
+          vec3 c = mix(vec3(0.0,0.3,0.9), vec3(0.2,0.6,1.0), .5+.5*cos(a));
+          c = mix(c, vec3(0.7,0.9,1.0), .5+.5*sin(d));
           return vec4(c, 1.0);
         }
 
@@ -122,7 +122,7 @@ export default function Home() {
           u_speed: { value: 1.3 },
           u_waterTexture: { value: waterTexture },
           u_waterStrength: { value: 0.55 },
-          u_gradientTheme: { value: 0 }
+          u_gradientTheme: { value: 1 }
         }
       });
 
