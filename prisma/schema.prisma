@@ -14,8 +14,7 @@ model Project {
   imageUrl     String?
   projectUrl   String?
   githubUrl    String?
-  technologies String[]
+  technologies String[] @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
-

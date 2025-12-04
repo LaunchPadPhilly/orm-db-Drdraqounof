@@ -43,9 +43,9 @@ export default async function Projects() {
                   <p>
                     {project.description || 'An innovative project showcasing cutting-edge technology and creative problem solving'}
                   </p>
-                  {project.tech && project.tech.length > 0 && (
+                  {project.technologies && project.technologies.length > 0 && (
                     <div className="tech-tags">
-                      {project.tech.map((tech, index) => (
+                      {project.technologies.map((tech, index) => (
                         <span key={index} className="tech-tag">
                           {tech}
                         </span>

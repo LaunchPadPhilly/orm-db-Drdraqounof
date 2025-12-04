@@ -1,14 +1,13 @@
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 export async function GET(request, { params }) {
   try {
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const projectId = parseInt(id);
     
     // Validate that id is a number
-    if (isNaN(id)) {
+    if (isNaN(projectId)) {
       return NextResponse.json(
         { error: 'Invalid project ID' },
         { status: 400 }
@@ -16,7 +15,7 @@ export async function GET(request, { params }) {
     }
 
     const project = await prisma.project.findUnique({
-      where: { id: id }
+      where: { id: projectId }
     });
 
     if (!project) {
@@ -38,9 +37,10 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   try {
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const projectId = parseInt(id);
     
-    if (isNaN(id)) {
+    if (isNaN(projectId)) {
       return NextResponse.json(
         { error: 'Invalid project ID' },
         { status: 400 }
@@ -50,27 +50,31 @@ export async function PUT(request, { params }) {
     const body = await request.json();
     const { title, description, imageUrl, projectUrl, githubUrl, technologies } = body;
 
-    const project = await prisma.project.update({
-      where: { id: id },
-      data: {
-        ...(title !== undefined && { title }),
-        ...(description !== undefined && { description }),
-        ...(imageUrl !== undefined && { imageUrl }),
-        ...(projectUrl !== undefined && { projectUrl }),
-        ...(githubUrl !== undefined && { githubUrl }),
-        ...(technologies !== undefined && { technologies })
-      }
-    });
+    try {
+      const project = await prisma.project.update({
+        where: { id: projectId },
+        data: {
+          title,
+          description,
+          imageUrl,
+          projectUrl,
+          githubUrl,
+          technologies
+        }
+      });
 
-    return NextResponse.json(project);
+      return NextResponse.json(project);
+    } catch (updateError) {
+      if (updateError.code === 'P2025') {
+        return NextResponse.json(
+          { error: 'Project not found' },
+          { status: 404 }
+        );
+      }
+      throw updateError;
+    }
   } catch (error) {
     console.error('Error updating project:', error);
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Project not found' },
-        { status: 404 }
-      );
-    }
     return NextResponse.json(
       { error: 'Failed to update project' },
       { status: 500 }
@@ -80,28 +84,33 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const projectId = parseInt(id);
     
-    if (isNaN(id)) {
+    if (isNaN(projectId)) {
       return NextResponse.json(
         { error: 'Invalid project ID' },
         { status: 400 }
       );
     }
 
-    await prisma.project.delete({
-      where: { id: id }
-    });
+    try {
+      await prisma.project.delete({
+        where: { id: projectId }
+      });
 
-    return NextResponse.json({ message: 'Project deleted successfully' });
+      return NextResponse.json({ message: 'Project deleted successfully' });
+    } catch (deleteError) {
+      if (deleteError.code === 'P2025') {
+        return NextResponse.json(
+          { error: 'Project not found' },
+          { status: 404 }
+        );
+      }
+      throw deleteError;
+    }
   } catch (error) {
     console.error('Error deleting project:', error);
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Project not found' },
-        { status: 404 }
-      );
-    }
     return NextResponse.json(
       { error: 'Failed to delete project' },
       { status: 500 }

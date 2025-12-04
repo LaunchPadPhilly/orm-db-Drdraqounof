@@ -3,55 +3,21 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 export default async function ProjectDetail({ params }) {
-  const { id } = params;
+  const { id } = await params;
 
-  // TODO: Fetch the specific project from your API
-  // Instructions for students:
-  // 1. Use fetch() to get data from /api/projects/[id]
-  // 2. Handle 404 responses by calling notFound()
-  // 3. Parse the JSON response
-  // 4. Display the project details
+  const response = await fetch(`http://localhost:3000/api/projects/${id}`, {
+    cache: 'no-store'
+  });
   
-  // Example implementation (students should write this):
-  // const response = await fetch(`http://localhost:3000/api/projects/${id}`);
-  // 
-  // if (!response.ok) {
-  //   if (response.status === 404) {
-  //     notFound();
-  //   }
-  //   throw new Error('Failed to fetch project');
-  // }
-  // 
-  // const project = await response.json();
-
-  // For now, return placeholder until students implement the API
-  const project = null;
-
-  if (!project) {
-    return (
-      <div className="min-h-screen p-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold mb-8">Project Not Implemented</h1>
-          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
-            <h2 className="font-bold text-blue-900 mb-4">🚀 To view project details:</h2>
-            <ol className="text-blue-800 space-y-2 list-decimal list-inside text-left">
-              <li>Implement the GET /api/projects/[id] endpoint</li>
-              <li>Create and seed your database with projects</li>
-              <li>Update this page to fetch from the API</li>
-            </ol>
-          </div>
-          <Link 
-            href="/projects" 
-            className="inline-block mt-8 bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition-colors"
-          >
-            ← Back to Projects
-          </Link>
-        </div>
-      </div>
-    );
+  if (!response.ok) {
+    if (response.status === 404) {
+      notFound();
+    }
+    throw new Error('Failed to fetch project');
   }
+  
+  const project = await response.json();
 
-  // This code will run once students implement the API
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">

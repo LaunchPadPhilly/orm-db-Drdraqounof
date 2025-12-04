@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { title, description, imageUrl, projectUrl, githubUrl, technologies } = body
+    const { title, description, technologies, imageUrl, projectUrl, githubUrl } = body
 
     if (!title) {
       return NextResponse.json(
@@ -33,14 +33,29 @@ export async function POST(request) {
       )
     }
 
+    if (!description) {
+      return NextResponse.json(
+        { error: 'Description is required' },
+        { status: 400 }
+      )
+    }
+
+
+    if (!technologies || !Array.isArray(technologies) || technologies.length === 0) {
+      return NextResponse.json(
+        { error: 'Technologies is required and must be a non-empty array' },
+        { status: 400 }
+      )
+    }
+
     const project = await prisma.project.create({
       data: {
         title,
         description,
-        imageUrl,
-        projectUrl,
-        githubUrl,
-        technologies: technologies || []
+        technologies,
+        imageUrl: imageUrl || null,
+        projectUrl: projectUrl || null,
+        githubUrl: githubUrl || null
       }
     })
 

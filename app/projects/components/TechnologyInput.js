@@ -1,42 +1,94 @@
-// TODO: Students will implement this component
-// This is an advanced component building exercise
+'use client';
 
-// Component Requirements:
-// 1. Create a component that accepts { technologies, onChange, error } props
-// 2. Allow users to type in a technology name and add it to the list
-// 3. Provide quick-add buttons for common technologies
-// 4. Display selected technologies as removable tags
-// 5. Prevent duplicate technologies
-// 6. Support both keyboard (Enter) and button (Add) interactions
-// 7. Handle error states with visual feedback
+import { useState } from 'react';
 
-// Learning Objectives:
-// - Advanced React state management
-// - Array manipulation patterns
-// - User input handling
-// - Conditional styling
-// - Accessibility considerations
-// - Component prop patterns
-
-// Suggested Technologies for Quick-Add:
-// ['JavaScript', 'TypeScript', 'React', 'Next.js', 'Node.js', 'Express',
-//  'HTML', 'CSS', 'Tailwind CSS', 'Bootstrap', 'Python', 'Java',
-//  'PostgreSQL', 'MongoDB', 'MySQL', 'Prisma', 'GraphQL', 'REST API',
-//  'Git', 'Docker', 'AWS', 'Vercel', 'Figma', 'Photoshop']
-
-// Implementation Hints:
-// - Use 'use client' directive
-// - Manage local input state with useState
-// - Use filter() to remove technologies
-// - Use includes() to check for duplicates
-// - Handle keyPress event for Enter key
-// - Style error states with conditional classes
+const PREDEFINED_TECHNOLOGIES = [
+  'JavaScript',
+  'React',
+  'Next.js',
+  'TypeScript',
+  'Node.js',
+  'Tailwind CSS',
+  'Prisma',
+  'PostgreSQL'
+];
 
 export default function TechnologyInput({ technologies = [], onChange, error }) {
-  // TODO: Implement this component
+  const [inputValue, setInputValue] = useState('');
+
+  const addTechnology = (tech) => {
+    const trimmedTech = tech.trim();
+    if (trimmedTech && !technologies.includes(trimmedTech)) {
+      onChange([...technologies, trimmedTech]);
+      setInputValue('');
+    }
+  };
+
+  const handleAdd = () => {
+    addTechnology(inputValue);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTechnology(inputValue);
+    }
+  };
+
+  const handleQuickAdd = (tech) => {
+    addTechnology(tech);
+  };
+
+  const handleRemove = (indexToRemove) => {
+    onChange(technologies.filter((_, index) => index !== indexToRemove));
+  };
+
   return (
     <div>
-      <p>TODO: Implement TechnologyInput component</p>
+      <label htmlFor="technology-input">Technologies</label>
+      <div>
+        <input
+          id="technology-input"
+          type="text"
+          placeholder="Type a technology and press Enter"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyPress={handleKeyPress}
+        />
+        <button type="button" onClick={handleAdd}>
+          Add
+        </button>
+      </div>
+      
+      <div>
+        {PREDEFINED_TECHNOLOGIES.map((tech) => (
+          <button
+            key={tech}
+            type="button"
+            onClick={() => handleQuickAdd(tech)}
+            disabled={technologies.includes(tech)}
+          >
+            {tech}
+          </button>
+        ))}
+      </div>
+
+      {error && <p className="error">{error}</p>}
+      
+      <div>
+        {technologies.map((tech, index) => (
+          <span key={index}>
+            {tech}
+            <button
+              type="button"
+              onClick={() => handleRemove(index)}
+              aria-label={`Remove ${tech}`}
+            >
+              ×
+            </button>
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
