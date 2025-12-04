@@ -1,50 +1,57 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Start seeding...');
+  // Clear existing data
+  await prisma.project.deleteMany({});
 
-  // TODO: Add your seed data here
-  // Example:
-  await prisma.project.createMany({
+  console.log('Database cleared');
+
+  // Create sample projects
+  const projects = await prisma.project.createMany({
     data: [
       {
-        title: "Portfolio Website",
-        description: "A personal portfolio website built with Next.js and Tailwind CSS.",
-        imageUrl: "/project1.jpg",
-        projectUrl: "https://your-portfolio.vercel.app",
-        githubUrl: "https://github.com/yourusername/portfolio",
-        technologies: ["Next.js", "Tailwind CSS", "React"]
+        title: '3D Game Demo',
+        description: 'Built a pseudo-3D interactive game using layered sprites and camera motion to create depth. Implemented custom mechanics, coordinate transforms, and collision effects.',
+        technologies: ['Scratch', 'Game Design', '3D Simulation', 'Animation'],
+        imageUrl: 'https://placehold.co/600x400',
+        projectUrl: 'https://example.com/3d-game',
+        githubUrl: 'https://github.com/example/3d-game',
       },
       {
-        title: "Task Manager App",
-        description: "A full-stack task management application with user authentication.",
-        imageUrl: "/project2.jpg",
-        projectUrl: "https://task-manager.vercel.app",
-        githubUrl: "https://github.com/yourusername/task-manager",
-        technologies: ["React", "Node.js", "PostgreSQL", "Prisma"]
+        title: 'Fitness Website',
+        description: 'Designed a modern, responsive website prototype with accessible UI elements. Created mobile and desktop versions for consistent cross-device experience.',
+        technologies: ['Figma', 'UI/UX Design', 'Responsive Design', 'Prototyping'],
+        imageUrl: 'https://placehold.co/600x400',
+        projectUrl: 'https://example.com/fitness-site',
+        githubUrl: 'https://github.com/example/fitness-site',
       },
       {
-        title: "Weather Dashboard",
-        description: "A responsive weather dashboard using external APIs.",
-        imageUrl: "/project3.jpg",
-        projectUrl: "https://weather-dash.vercel.app",
-        githubUrl: "https://github.com/yourusername/weather-dashboard",
-        technologies: ["JavaScript", "CSS", "Weather API"]
-      }
-    ]
+        title: 'Cooking Website',
+        description: 'Developed a responsive recipe site with intuitive navigation and clean layout. Designed UI in Figma and built the front-end using HTML and CSS.',
+        technologies: ['HTML', 'CSS', 'Figma', 'Responsive Design'],
+        imageUrl: 'https://placehold.co/600x400',
+        projectUrl: 'https://example.com/cooking-site',
+        githubUrl: 'https://github.com/example/cooking-site',
+      },
+    ],
   });
 
-  console.log('Seeding finished.');
+  console.log('Created projects:', projects);
+
+  // Fetch and display all projects
+  const allProjects = await prisma.project.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  console.log('\nAll projects in database:');
+  console.log(JSON.stringify(allProjects, null, 2));
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+  .catch((e) => console.error(e))
+  .finally(async () => await prisma.$disconnect());
+
