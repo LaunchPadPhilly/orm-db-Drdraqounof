@@ -8,15 +8,16 @@ async function main() {
   await prisma.project.deleteMany({});
   console.log('Database cleared');
 
-  // Create sample projects individually to get their IDs
+  // Create a project with a known ID for update tests
   const project1 = await prisma.project.create({
     data: {
-      title: '3D Game Demo',
-      description: 'Built a pseudo-3D interactive game using layered sprites and camera motion to create depth. Implemented custom mechanics, coordinate transforms, and collision effects.',
-      technologies: ['Scratch', 'Game Design', '3D Simulation', 'Animation'],
-      imageUrl: 'https://placehold.co/600x400',
-      projectUrl: 'https://example.com/3d-game',
-      githubUrl: 'https://github.com/example/3d-game',
+      id: 1,
+      title: 'Test Project',
+      description: 'Seeded for update test',
+      technologies: ['Test'],
+      imageUrl: '',
+      projectUrl: '',
+      githubUrl: ''
     },
   });
   const project2 = await prisma.project.create({
