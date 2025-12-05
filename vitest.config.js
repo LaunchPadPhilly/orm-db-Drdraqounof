@@ -8,7 +8,6 @@ export default defineConfig({
       include: /.*\.[jt]sx?$/,  // allow react plugin on .js too
     }),
   ],
-
   // Force Vite/Rollup import-analysis to parse .js as JSX
   esbuild: {
     loader: 'jsx',
