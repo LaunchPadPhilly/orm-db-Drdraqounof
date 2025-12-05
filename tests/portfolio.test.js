@@ -54,7 +54,7 @@ describe('Week 1 Portfolio - Component Tests', () => {
   })
 
   it('should have ProjectForm component file', () => {
-    const projectFormPath = path.join(process.cwd(), 'app/projects/components/ProjectForm.js')
+    const projectFormPath = path.join(process.cwd(), 'app/projects/components/ProjectForm.jsx')
     const exists = fs.existsSync(projectFormPath)
     
     if (!exists) {
@@ -65,7 +65,7 @@ describe('Week 1 Portfolio - Component Tests', () => {
   })
 
   it('should have TechnologyInput component file', () => {
-    const technologyInputPath = path.join(process.cwd(), 'app/projects/components/TechnologyInput.js')
+    const technologyInputPath = path.join(process.cwd(), 'app/projects/components/TechnologyInput.jsx')
     const exists = fs.existsSync(technologyInputPath)
     
     if (!exists) {
@@ -218,8 +218,8 @@ describe('Week 1 Portfolio - Completion Summary', () => {
       'app/layout.js',
       'app/components/Navbar.js',
       'app/components/Footer.js',
-      'app/projects/components/ProjectForm.js',
-      'app/projects/components/TechnologyInput.js',
+      'app/projects/components/ProjectForm.jsx',
+      'app/projects/components/TechnologyInput.jsx',
     ]
 
     requiredFiles.forEach(file => {

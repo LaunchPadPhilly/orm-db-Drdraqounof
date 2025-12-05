@@ -21,6 +21,127 @@ describe('Database Schema and Operations', () => {
     });
   });
 
+   describe('Database Queries', () => {
+    beforeEach(async () => {
+      // Create test data for query tests
+      await prisma.project.createMany({
+        data: [
+          {
+            title: "Test DB Query Project 1",
+            description: "First query test project",
+            technologies: ["React", "Node.js"]
+          },
+          {
+            title: "Test DB Query Project 2",
+            description: "Second query test project",
+            technologies: ["Vue.js", "Express"]
+          },
+          {
+            title: "Test DB Query Project 3",
+            description: "Third query test project",
+            technologies: ["Angular", "NestJS"]
+          }
+        ]
+      });
+    });
+
+    it('should fetch all projects with findMany', async () => {
+      const projects = await prisma.project.findMany({
+        where: {
+          title: { contains: "Test DB Query" }
+        }
+      });
+
+      expect(projects.length).toBe(3);
+      expect(projects.every(p => p.title.includes("Test DB Query"))).toBe(true);
+    });
+
+    it('should fetch projects ordered by creation date (newest first)', async () => {
+      const projects = await prisma.project.findMany({
+        where: {
+          title: { contains: "Test DB Query" }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      expect(projects.length).toBe(3);
+      
+      for (let i = 0; i < projects.length - 1; i++) {
+        expect(projects[i].createdAt.getTime()).toBeGreaterThanOrEqual(
+          projects[i + 1].createdAt.getTime()
+        );
+      }
+    });
+
+    it('should fetch a single project with findUnique', async () => {
+      const allProjects = await prisma.project.findMany({
+        where: { title: { contains: "Test DB Query" } }
+      });
+      
+      const firstProject = allProjects[0];
+      
+      const foundProject = await prisma.project.findUnique({
+        where: { id: firstProject.id }
+      });
+
+      expect(foundProject).not.toBeNull();
+      expect(foundProject.id).toBe(firstProject.id);
+      expect(foundProject.title).toBe(firstProject.title);
+    });
+
+    it('should return null for findUnique with non-existent id', async () => {
+      const project = await prisma.project.findUnique({
+        where: { id: 99999 }
+      });
+
+      expect(project).toBeNull();
+    });
+
+    it('should update a project record', async () => {
+      const project = await prisma.project.create({
+        data: {
+          title: "Test DB Update Original",
+          description: "Original description",
+          technologies: ["JavaScript"]
+        }
+      });
+
+      const updatedProject = await prisma.project.update({
+        where: { id: project.id },
+        data: {
+          title: "Test DB Update Modified",
+          description: "Updated description",
+          technologies: ["TypeScript"]
+        }
+      });
+
+      expect(updatedProject.title).toBe("Test DB Update Modified");
+      expect(updatedProject.description).toBe("Updated description");
+      expect(updatedProject.technologies).toEqual(["TypeScript"]);
+      expect(updatedProject.id).toBe(project.id);
+    });
+
+    it('should delete a project record', async () => {
+      const project = await prisma.project.create({
+        data: {
+          title: "Test DB Delete Project",
+          description: "This will be deleted",
+          technologies: ["React"]
+        }
+      });
+
+      await prisma.project.delete({
+        where: { id: project.id }
+      });
+
+      const deletedProject = await prisma.project.findUnique({
+        where: { id: project.id }
+      });
+
+      expect(deletedProject).toBeNull();
+    });
+  });
+
   describe('Project Model Schema', () => {
     it('should create a project with all required fields', async () => {
       const projectData = {
@@ -141,126 +262,7 @@ describe('Database Schema and Operations', () => {
     });
   });
 
-  describe('Database Queries', () => {
-    beforeEach(async () => {
-      // Create test data for query tests
-      await prisma.project.createMany({
-        data: [
-          {
-            title: "Test DB Query Project 1",
-            description: "First query test project",
-            technologies: ["React", "Node.js"]
-          },
-          {
-            title: "Test DB Query Project 2",
-            description: "Second query test project",
-            technologies: ["Vue.js", "Express"]
-          },
-          {
-            title: "Test DB Query Project 3",
-            description: "Third query test project",
-            technologies: ["Angular", "NestJS"]
-          }
-        ]
-      });
-    });
-
-    it('should fetch all projects with findMany', async () => {
-      const projects = await prisma.project.findMany({
-        where: {
-          title: { contains: "Test DB Query" }
-        }
-      });
-
-      expect(projects.length).toBe(3);
-      expect(projects.every(p => p.title.includes("Test DB Query"))).toBe(true);
-    });
-
-    it('should fetch projects ordered by creation date (newest first)', async () => {
-      const projects = await prisma.project.findMany({
-        where: {
-          title: { contains: "Test DB Query" }
-        },
-        orderBy: { createdAt: 'desc' }
-      });
-
-      expect(projects.length).toBe(3);
-      
-      for (let i = 0; i < projects.length - 1; i++) {
-        expect(projects[i].createdAt.getTime()).toBeGreaterThanOrEqual(
-          projects[i + 1].createdAt.getTime()
-        );
-      }
-    });
-
-    it('should fetch a single project with findUnique', async () => {
-      const allProjects = await prisma.project.findMany({
-        where: { title: { contains: "Test DB Query" } }
-      });
-      
-      const firstProject = allProjects[0];
-      
-      const foundProject = await prisma.project.findUnique({
-        where: { id: firstProject.id }
-      });
-
-      expect(foundProject).not.toBeNull();
-      expect(foundProject.id).toBe(firstProject.id);
-      expect(foundProject.title).toBe(firstProject.title);
-    });
-
-    it('should return null for findUnique with non-existent id', async () => {
-      const project = await prisma.project.findUnique({
-        where: { id: 99999 }
-      });
-
-      expect(project).toBeNull();
-    });
-
-    it('should update a project record', async () => {
-      const project = await prisma.project.create({
-        data: {
-          title: "Test DB Update Original",
-          description: "Original description",
-          technologies: ["JavaScript"]
-        }
-      });
-
-      const updatedProject = await prisma.project.update({
-        where: { id: project.id },
-        data: {
-          title: "Test DB Update Modified",
-          description: "Updated description",
-          technologies: ["TypeScript"]
-        }
-      });
-
-      expect(updatedProject.title).toBe("Test DB Update Modified");
-      expect(updatedProject.description).toBe("Updated description");
-      expect(updatedProject.technologies).toEqual(["TypeScript"]);
-      expect(updatedProject.id).toBe(project.id);
-    });
-
-    it('should delete a project record', async () => {
-      const project = await prisma.project.create({
-        data: {
-          title: "Test DB Delete Project",
-          description: "This will be deleted",
-          technologies: ["React"]
-        }
-      });
-
-      await prisma.project.delete({
-        where: { id: project.id }
-      });
-
-      const deletedProject = await prisma.project.findUnique({
-        where: { id: project.id }
-      });
-
-      expect(deletedProject).toBeNull();
-    });
-  });
+ 
 
   describe('Data Validation', () => {
     it('should enforce required fields (title)', async () => {
