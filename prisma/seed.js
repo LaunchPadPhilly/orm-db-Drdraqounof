@@ -18,12 +18,12 @@ async function main() {
         technologies: ["Next.js", "Tailwind CSS", "React"]
       },
       {
-        title: "Task Manager App",
+        title: "CareerPath Ai",
         description: "A full-stack task management application with user authentication.",
         imageUrl: "/project2.jpg",
-        projectUrl: "https://task-manager.vercel.app",
-        githubUrl: "https://github.com/yourusername/task-manager",
-        technologies: ["React", "Node.js", "PostgreSQL", "Prisma"]
+        projectUrl: "https://bc-app-lake.vercel.app/",
+        githubUrl: "https://github.com/chriskeels/bc-app",
+        technologies: ["React", "Node.js", "CSS"]
       },
       {
         title: "Weather Dashboard",
